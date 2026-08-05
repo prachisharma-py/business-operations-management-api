@@ -4,6 +4,7 @@ import pytest
 
 from django.contrib.auth import get_user_model
 from employees.models import Employee
+from rest_framework.test import APIClient
 
 User = get_user_model()
 
@@ -28,3 +29,10 @@ def employee(user):
         designation="Backend Developer",
         joining_date=datetime.date(2024, 4, 1),
     )
+
+
+@pytest.fixture
+def authenticated_client(user):
+    client = APIClient()
+    client.force_authenticate(user=user)
+    return client
