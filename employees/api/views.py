@@ -10,11 +10,23 @@ from .filters import EmployeeFilter
 from common.pagination import StandardResultSetPagination
 from common.responses import success_response
 
+from drf_spectacular.utils import extend_schema
+
 import logging
 
 
 logger = logging.getLogger(__name__)
 
+
+
+@extend_schema(
+    summary="List and create employees",
+    description=(
+        "Retrive a paginated list of employees or create a new employee."
+        "Only administrators are allowed to create employees."
+    ),
+    tags=["Employees"],
+)
 
 class EmployeeListCreateView(generics.ListCreateAPIView):
     queryset = Employee.objects.select_related("user").all()
@@ -65,6 +77,15 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
         return super().list(request, *args, **kwargs)
     
 
+
+@extend_schema(
+    summary="Retrive, update or delete an employee",
+    description=(
+        "Retrive employee details, update employee information, or delete an employee. Access is controlled by object-level permissions."
+    ),
+    tags=["Employees"],
+)
+
 class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Employee.objects.select_related("user").all()
     lookup_field = "pk"
@@ -76,9 +97,12 @@ class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method in ["PUT", "PATCH"]:
             return [IsAuthenticated(), IsAdminOrManager()]
         
-        if self.request.user.role == "EMPLOYEE":
+        if (
+            self.request.user.is_authenticated
+            and self.request.user.role == "EMPLOYEE"
+        ):
             return [IsAuthenticated(), EmployeeOwner()]
-
+        
         return [IsAuthenticated()]
 
     def get_serializer_class(self):
@@ -90,8 +114,11 @@ class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         obj = super().get_object()
 
-        if self.request.user.role == "EMPLOYEE":
-            self.check_object_permissions(self.request,obj)
+        if (
+            self.request.user.is_authenticated
+            and self.request.user.role == "EMPLOYEE"
+        ):
+            self.check_object_permissions(self.request, obj)
 
         return obj
 

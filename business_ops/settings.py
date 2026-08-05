@@ -175,6 +175,19 @@ REST_FRAMEWORK = {
     ],
 
     "EXCEPTION_HANDLER": "common.exceptions.custom_exception_handler",
+
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Business Operations Management API",
+    "DESCRIPTION": (
+        "A production-ready Business Operations Management API built with Django REST Framework."
+    ),
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
 
 AUTH_USER_MODEL = "accounts.User"
