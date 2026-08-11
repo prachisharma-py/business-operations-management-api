@@ -18,3 +18,8 @@ logs/
 
 # VS Code
 .vscode/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
