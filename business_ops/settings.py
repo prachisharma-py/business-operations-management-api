@@ -16,8 +16,8 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-import os
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
     "version": 1,
@@ -34,7 +34,7 @@ LOGGING = {
         "file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs", "app.log"),
+            "filename": LOG_DIR / "app.log",
             "formatter": "standard", 
         },
     },
@@ -53,7 +53,10 @@ LOGGING = {
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f*cg6ah#vwmy6d%6ge)fvie0^#_03xrxjd+(u=xgim=cg18g7_'
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-development-key",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
