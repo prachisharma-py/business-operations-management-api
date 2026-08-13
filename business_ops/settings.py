@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'accounts',
     'employees',
     'django_filters',
+    'departments',
 ]
 
 MIDDLEWARE = [
