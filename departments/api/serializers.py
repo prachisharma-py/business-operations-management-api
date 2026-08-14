@@ -45,6 +45,9 @@ class DepartmentWriteSerializer(serializers.ModelSerializer):
         ]
 
     def validate_manager(self, value):
+        if value is None:
+            return value
+        
         if value.employee_status != Employee.ACTIVE:
             raise serializers.ValidationError(
                 "Only active employees can be assigned as department managers."
