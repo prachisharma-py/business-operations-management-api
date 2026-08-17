@@ -5,6 +5,6 @@ from departments.api.views import DepartmentViewSet
 
 router = DefaultRouter()
 
-router.register("deparments", DepartmentViewSet, basename="deparment")
+router.register("departments", DepartmentViewSet, basename="department")
 
 urlpatterns = router.urls
