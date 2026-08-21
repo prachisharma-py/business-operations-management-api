@@ -7,13 +7,16 @@ class DepartmentManagerPermission(BasePermission):
         if not request.user.is_authenticated:
             return False
 
-        if request.method in ["GET", "HEAD", "OPTION"]:
+        if request.method in ["GET", "HEAD", "OPTIONS"]:
             return True
 
         return IsAdminOrManager().has_permission(request, view)
 
 
     def has_object_permission(self, request, view, obj):
+        if request.method in ["GET", "HEAD", "OPTIONS"]:
+            return True
+        
         if request.user.role == "ADMIN":
             return True
 

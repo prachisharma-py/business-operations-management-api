@@ -13,4 +13,3 @@ class DepartmentViewSet(viewsets.ModelViewSet):
             return DepartmentReadSerializer
 
         return DepartmentWriteSerializer
-
