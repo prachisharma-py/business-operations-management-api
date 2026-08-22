@@ -94,7 +94,7 @@ def manager_employee(manager_user):
 
 
 @pytest.fixture
-def second_manger_employee():
+def second_manager_employee():
     second_manager = User.objects.create_user(
         username="manager2",
         email="manager2@example.com",
