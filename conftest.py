@@ -56,6 +56,11 @@ def employee(user):
 
 
 @pytest.fixture
+def api_client():
+    return APIClient()
+
+
+@pytest.fixture
 def authenticated_client(user):
     client = APIClient()
     client.force_authenticate(user=user)
@@ -89,7 +94,7 @@ def manager_employee(manager_user):
 
 
 @pytest.fixture
-def second_maanger_employee():
+def second_manger_employee():
     second_manager = User.objects.create_user(
         username="manager2",
         email="manager2@example.com",

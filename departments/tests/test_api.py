@@ -1,6 +1,5 @@
 import pytest
 from django.urls import reverse
-from rest_framework.test import APIClient
 
 from departments.models import Department
 
@@ -14,13 +13,10 @@ def department(employee):
     )
 
 
-@pytest.fixture
-def api_client():
-    return APIClient()
-
-
 @pytest.mark.django_db
-def test_list_department(api_client, department):
+def test_list_department(api_client, department, employee):
+    api_client.force_authenticate(user=employee.user)
+
     url = reverse("department-list")
 
     response = api_client.get(url)
@@ -31,7 +27,9 @@ def test_list_department(api_client, department):
 
 
 @pytest.mark.django_db
-def test_retrieve_department(api_client, department):
+def test_retrieve_department(api_client, department ,employee):
+    api_client.force_authenticate(user=employee.user)
+
     url = reverse("department-detail", kwargs={"pk": department.id})
 
     response = api_client.get(url)
@@ -43,7 +41,9 @@ def test_retrieve_department(api_client, department):
 
 
 @pytest.mark.django_db
-def test_create_department(api_client, employee):
+def test_create_department(api_client, employee, manager_user):
+    api_client.force_authenticate(user=manager_user)
+
     data = {
         "name": "Finance",
         "description": "Finance Department",
@@ -62,13 +62,21 @@ def test_create_department(api_client, employee):
 
 
 @pytest.mark.django_db
-def test_update_department(api_client, department,employee):
+def test_update_department(api_client, manager_user, manager_employee):
+    department = Department.objects.create(
+        name="Engineering",
+        description="Engineering Department",
+        manager=manager_employee,
+    )
+
+    api_client.force_authenticate(user=manager_user)
+
     url = reverse("department-detail", kwargs={"pk": department.id})
 
     data = {
         "name": "Updated Engineering",
         "description": "Updated Engineering Department",
-        "manager": employee.id,
+        "manager": manager_employee.id,
     }
 
     response = api_client.put(url, data, format="json")
@@ -83,7 +91,15 @@ def test_update_department(api_client, department,employee):
 
 
 @pytest.mark.django_db
-def test_delete_department(api_client, department):
+def test_delete_department(api_client, manager_user, manager_employee):
+    department = Department.objects.create(
+        name="Engineering",
+        description="Engineering Department",
+        manager=manager_employee,
+    )
+
+    api_client.force_authenticate(user=manager_user)
+
     url = reverse("department-detail", kwargs={"pk": department.id})
 
     response = api_client.delete(url)
