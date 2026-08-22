@@ -74,11 +74,11 @@ def test_manager_can_modify_own_department(manager_user, manager_employee):
 
 
 @pytest.mark.django_db
-def test_manager_cannot_modify_another_managers_department(manager_user, second_maanger_employee):
+def test_manager_cannot_modify_another_managers_department(manager_user, second_manager_employee):
     department = Department.objects.create(
         name="Finance",
         description="Finanace Department",
-        manager=second_maanger_employee,
+        manager=second_manager_employee,
     )
 
     permission = DepartmentManagerPermission()
