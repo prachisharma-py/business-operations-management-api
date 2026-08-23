@@ -27,14 +27,19 @@ class Employee(models.Model):
     )
 
     department = models.CharField(max_length=100)
+    
     designation = models.CharField(max_length=100)
+
     joining_date = models.DateField()
+
     employee_status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default=ACTIVE,
     )
+    
     created_at = models.DateTimeField(auto_now_add=True)
+
     updated_at = models.DateTimeField(auto_now=True)
 
 
