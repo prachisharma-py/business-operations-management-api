@@ -26,7 +26,11 @@ class Employee(models.Model):
         unique=True,
     )
 
-    department = models.CharField(max_length=100)
+    department = models.ForeignKey(
+        "departments.Department",
+        on_delete=models.PROTECT,
+        related_name="employees",
+    )
     
     designation = models.CharField(max_length=100)
 
