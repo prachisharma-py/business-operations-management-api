@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from employees.models import Employee
+from departments.models import Department
 
 
 User = get_user_model()
@@ -11,10 +12,13 @@ User = get_user_model()
 
 @pytest.fixture
 def employees(user):
+    engineering = Department.objects.get(name="Engineering")
+    HR = Department.objects.get(name="HR")
+
     employee1 = Employee.objects.create(
         user=user,
         employee_id="EMP001",
-        department="Engineering",
+        department=engineering,
         designation="Backend Developer",
         joining_date="2023-07-25",
     )
@@ -28,7 +32,7 @@ def employees(user):
     employee2 = Employee.objects.create(
         user=user2,
         employee_id="EMP002",
-        department="HR",
+        department=HR,
         designation="HR Manager",
         joining_date="2024-12-02"
     )
@@ -42,7 +46,7 @@ def employees(user):
     employee3 = Employee.objects.create(
         user=user3,
         employee_id="EMP003",
-        department="Engineering",
+        department=engineering,
         designation="Frontend Developer",
         joining_date="2025-05-15",
     )
@@ -60,7 +64,7 @@ def test_filter_by_department(authenticated_client, employees):
     results = response.data["results"]
 
     assert len(results) == 2
-    assert all(employee["department"] == "Engineering" for employee in results)
+    assert all(employee["department"]["name"] == "Engineering" for employee in results)
 
 
 @pytest.mark.django_db
@@ -92,7 +96,10 @@ def test_employee_ordering(authenticated_client, employees):
 
 @pytest.fixture
 def many_employees(user):
+    engineering = Department.objects.get(name="Engineering")
+
     employees = []
+
     for number in range(1, 13):
         if number == 1:
             current_user = user
@@ -106,7 +113,7 @@ def many_employees(user):
         employee = Employee.objects.create(
             user=current_user,
             employee_id=f"EMP{number:03d}",
-            department="Engineering",
+            department=engineering,
             designation="Developer",
             joining_date="2026-04-08",
         )

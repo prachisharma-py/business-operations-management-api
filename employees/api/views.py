@@ -42,7 +42,7 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
 
     search_fields = (
         "employee_id",
-        "department",
+        "department__name",
         "designation",
         "user__username",
         "user__email",
@@ -54,7 +54,7 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
         "employee_id",
         "joining_date",
         "created_at",
-        "department",
+        "department__name",
         "designation",
     )
 

@@ -1,14 +1,20 @@
 import pytest
 
 from employees.api.serializers import EmployeeWriteSerializer
+from departments.models import Department
+
+
+@pytest.fixture
+def department():
+    return Department.objects.get(name="Engineering")
 
 
 @pytest.mark.django_db
-def test_employee_serializer_valid(user):
+def test_employee_serializer_valid(user, department):
     data={
         "user": user.id,
         "employee_id": "EMP002",
-        "department": "Engineering",
+        "department": department.id,
         "designation": "Backend Developer",
         "joining_date": "2024-4-1",
         "employee_status": "ACTIVE",
@@ -16,7 +22,7 @@ def test_employee_serializer_valid(user):
 
     serializer = EmployeeWriteSerializer(data=data)
 
-    assert serializer.is_valid()
+    assert serializer.is_valid(), serializer.errors
 
 
 @pytest.mark.django_db
@@ -33,11 +39,11 @@ def test_department_required(user):
 
 
 @pytest.mark.django_db
-def test_serializer_creates_employee(user):
+def test_serializer_creates_employee(user, department):
     data = {
         "user": user.id,
         "employee_id": "EMP002",
-        "department": "Engineering",
+        "department": department.id,
         "designation": "Backend Developer",
         "joining_date": "2024-4-1",
         "employee_status": "ACTIVE",
@@ -45,9 +51,9 @@ def test_serializer_creates_employee(user):
 
     serializer = EmployeeWriteSerializer(data=data)
 
-    assert serializer.is_valid()
+    assert serializer.is_valid(), serializer.errors
 
     employee = serializer.save()
 
     assert employee.employee_id == "EMP002"
-    assert employee.department == "Engineering"
+    assert employee.department == department

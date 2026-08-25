@@ -9,7 +9,7 @@ User = get_user_model()
 @pytest.mark.django_db
 def test_create_employee(employee):
     assert employee.employee_id == "EMP001"
-    assert employee.department == "Engineering"
+    assert employee.department.name == "Engineering"
     assert employee.designation == "Backend Developer"
     assert employee.employee_status == Employee.ACTIVE
 

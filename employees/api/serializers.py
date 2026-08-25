@@ -3,9 +3,13 @@ from rest_framework import serializers
 from accounts.api.serializers import UserSerializer
 from employees.models import Employee
 
+from departments.api.serializers import DepartmentBasicSerializer
+
 
 class EmployeeReadSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+
+    department = DepartmentBasicSerializer(read_only=True)
 
     class Meta:
         model = Employee

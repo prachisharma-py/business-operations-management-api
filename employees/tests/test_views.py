@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 
 from employees.models import Employee
+from departments.models import Department
+
 
 User = get_user_model()
 
@@ -45,10 +47,12 @@ def test_create_employee(admin_client):
         role="EMPLOYEE",
     )
 
+    department = Department.objects.get(name="Finance")
+
     data = {
         "user": new_user.id,
         "employee_id": "EMP002",
-        "department": "Finance",
+        "department": department.id,
         "designation": "Accountant",
         "joining_date": "2025-01-11",
         "employee_status": "ACTIVE",
@@ -64,20 +68,22 @@ def test_create_employee(admin_client):
 
 @pytest.mark.django_db
 def test_update_employee(manager_client, employee):
+    department = Department.objects.get(name="HR")
+
     response = manager_client.patch(
         reverse(
             "employee-detail",
             kwargs={"pk": employee.id},
         ),
         {
-            "department": "HR",
+            "department": department.id,
         },
         format="json",
     )
 
     assert response.status_code == 200
     employee.refresh_from_db()
-    assert employee.department == "HR"
+    assert employee.department == department
 
 
 @pytest.mark.django_db

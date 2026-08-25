@@ -54,3 +54,12 @@ class DepartmentWriteSerializer(serializers.ModelSerializer):
             )
         
         return value
+
+
+class DepartmentBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = [
+            "id",
+            "name",
+        ]

@@ -5,6 +5,8 @@ import pytest
 from django.contrib.auth import get_user_model
 from employees.models import Employee
 from rest_framework.test import APIClient
+from departments.models import Department
+
 
 User = get_user_model()
 
@@ -46,10 +48,12 @@ def manager_user():
 
 @pytest.fixture
 def employee(user):
+    department = Department.objects.get(name="Engineering")
+
     return Employee.objects.create(
         user=user,
         employee_id="EMP001",
-        department="Engineering",
+        department=department,
         designation="Backend Developer",
         joining_date=datetime.date(2024, 4, 1),
     )
@@ -83,10 +87,12 @@ def manager_client(manager_user):
 
 @pytest.fixture
 def manager_employee(manager_user):
+    department = Department.objects.get(name="Engineering")
+
     return Employee.objects.create(
         user=manager_user,
         employee_id="MGR001",
-        department="Engineering",
+        department=department,
         designation="Engineering Manager",
         joining_date=datetime.date(2022, 1, 3),
         employee_status=Employee.ACTIVE,
@@ -104,10 +110,12 @@ def second_manager_employee():
         role="MANAGER",
     )
 
+    department = Department.objects.get(name="Finance")
+
     return Employee.objects.create(
         user=second_manager,
         employee_id="MGR0012",
-        department="Finance",
+        department=department,
         designation="Finance Manager",
         joining_date=datetime.date(2022, 1, 3),
         employee_status=Employee.ACTIVE,

@@ -4,6 +4,11 @@ from employees.models import Employee
 
 class EmployeeFilter(filters.FilterSet):
 
+    department = filters.CharFilter(
+        field_name="department__name",
+        lookup_expr="iexact",
+    )
+
     class Meta:
         model = Employee
         fields = (
