@@ -5,12 +5,11 @@ from departments.models import Department
 
 
 @pytest.mark.django_db
-def test_manager_cannot_modigy_another_managers_department(api_client, manager_user, second_manager_employee):
-    department = Department.objects.create(
-        name="Finance",
-        description="Finance Department",
-        manager=second_manager_employee,
-    )
+def test_manager_cannot_modigy_another_managers_department(api_client, manager_user, second_manager_employee, finance_department):
+    department = finance_department
+
+    department.manager = second_manager_employee
+    department.save()
 
     api_client.force_authenticate(user=manager_user)
 
@@ -19,7 +18,7 @@ def test_manager_cannot_modigy_another_managers_department(api_client, manager_u
     response = api_client.patch(
         url,
         {
-            "name": "Hacked Fianace",
+            "name": "Hacked Finance",
             "description": "Should not be allowed",
             "manager": second_manager_employee.id,
         },

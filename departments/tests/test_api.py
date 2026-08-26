@@ -5,12 +5,10 @@ from departments.models import Department
 
 
 @pytest.fixture
-def department(employee):
-    return Department.objects.create(
-        name="Engineering",
-        description="Engineering Department",
-        manager=employee,
-    )
+def department(engineering_department, employee):
+    engineering_department.manager = employee
+    engineering_department.save()
+    return engineering_department
 
 
 @pytest.mark.django_db
@@ -22,8 +20,10 @@ def test_list_department(api_client, department, employee):
     response = api_client.get(url)
 
     assert response.status_code == 200
-    assert len(response.data) == 1
-    assert response.data[0]["name"] == "Engineering"
+    assert len(response.data) == 4
+
+    names = {department["name"] for department in response.data}
+    assert names == {"Finance", "Sales", "HR", "Engineering"}
 
 
 @pytest.mark.django_db
@@ -45,8 +45,8 @@ def test_create_department(api_client, employee, manager_user):
     api_client.force_authenticate(user=manager_user)
 
     data = {
-        "name": "Finance",
-        "description": "Finance Department",
+        "name": "Operations",
+        "description": "Operations Department",
         "manager": employee.id,
     }
 
@@ -55,19 +55,18 @@ def test_create_department(api_client, employee, manager_user):
     response = api_client.post(url, data, format="json")
 
     assert response.status_code == 201
-    assert response.data["name"] == "Finance"
-    assert response.data["description"] == "Finance Department"
+    assert response.data["name"] == "Operations"
+    assert response.data["description"] == "Operations Department"
 
-    assert Department.objects.filter(name="Finance").exists()
+    assert Department.objects.filter(name="Operations").exists()
 
 
 @pytest.mark.django_db
-def test_update_department(api_client, manager_user, manager_employee):
-    department = Department.objects.create(
-        name="Engineering",
-        description="Engineering Department",
-        manager=manager_employee,
-    )
+def test_update_department(api_client, manager_user, manager_employee, engineering_department):
+    department = engineering_department
+
+    department.manager = manager_employee
+    department.save()
 
     api_client.force_authenticate(user=manager_user)
 
@@ -91,12 +90,11 @@ def test_update_department(api_client, manager_user, manager_employee):
 
 
 @pytest.mark.django_db
-def test_delete_department(api_client, manager_user, manager_employee):
-    department = Department.objects.create(
-        name="Engineering",
-        description="Engineering Department",
-        manager=manager_employee,
-    )
+def test_delete_department(api_client, manager_user, manager_employee, engineering_department):
+    department = engineering_department
+
+    department.manager = manager_employee
+    department.save()
 
     api_client.force_authenticate(user=manager_user)
 
@@ -104,5 +102,8 @@ def test_delete_department(api_client, manager_user, manager_employee):
 
     response = api_client.delete(url)
 
-    assert response.status_code == 204
-    assert not Department.objects.filter(pk=department.pk).exists()
+    assert response.status_code == 409
+    assert response.data["detail"] == (
+        "Cannot delete department because employees are assigned to it."
+    )
+    assert Department.objects.filter(pk=department.pk).exists()

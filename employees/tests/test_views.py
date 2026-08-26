@@ -37,7 +37,7 @@ def test_retrieve_employee(authenticated_client, employee):
 
 
 @pytest.mark.django_db
-def test_create_employee(admin_client):
+def test_create_employee(admin_client, finance_department):
     new_user = User.objects.create_user(
         username="Jane",
         email="jane@example.com",
@@ -47,12 +47,10 @@ def test_create_employee(admin_client):
         role="EMPLOYEE",
     )
 
-    department = Department.objects.get(name="Finance")
-
     data = {
         "user": new_user.id,
         "employee_id": "EMP002",
-        "department": department.id,
+        "department": finance_department.id,
         "designation": "Accountant",
         "joining_date": "2025-01-11",
         "employee_status": "ACTIVE",
@@ -67,23 +65,21 @@ def test_create_employee(admin_client):
 
 
 @pytest.mark.django_db
-def test_update_employee(manager_client, employee):
-    department = Department.objects.get(name="HR")
-
+def test_update_employee(manager_client, employee, hr_department):
     response = manager_client.patch(
         reverse(
             "employee-detail",
             kwargs={"pk": employee.id},
         ),
         {
-            "department": department.id,
+            "department": hr_department.id,
         },
         format="json",
     )
 
     assert response.status_code == 200
     employee.refresh_from_db()
-    assert employee.department == department
+    assert employee.department == hr_department
 
 
 @pytest.mark.django_db

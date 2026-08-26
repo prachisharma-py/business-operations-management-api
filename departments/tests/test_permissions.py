@@ -5,12 +5,11 @@ from departments.models import Department
 
 
 @pytest.mark.django_db
-def test_employee_can_read_department(employee):
-    department = Department.objects.create(
-        name="Engineering",
-        description="Engineerring Department",
-        manager=employee,
-    )
+def test_employee_can_read_department(employee, engineering_department):
+    department = engineering_department
+
+    department.manager = employee
+    department.save()
 
     permission = DepartmentManagerPermission()
 
@@ -36,12 +35,11 @@ def test_employee_cannot_creat_department(user):
 
 
 @pytest.mark.django_db
-def test_employee_cannot_modify_department(employee):
-    department = Department.objects.create(
-        name="Engineering",
-        description="Engineering Department",
-        manager=employee,
-    )
+def test_employee_cannot_modify_department(employee, engineering_department):
+    department = engineering_department
+    
+    department.manager = employee
+    department.save()
 
     permission = DepartmentManagerPermission()
 
@@ -55,12 +53,11 @@ def test_employee_cannot_modify_department(employee):
 
 
 @pytest.mark.django_db
-def test_manager_can_modify_own_department(manager_user, manager_employee):
-    department = Department.objects.create(
-        name="Engineering",
-        description="Engineering Department",
-        manager=manager_employee,
-    )
+def test_manager_can_modify_own_department(manager_user, manager_employee, engineering_department):
+    department = engineering_department
+    
+    department.manager = manager_employee
+    department.save()
 
     permission = DepartmentManagerPermission()
 
@@ -74,12 +71,11 @@ def test_manager_can_modify_own_department(manager_user, manager_employee):
 
 
 @pytest.mark.django_db
-def test_manager_cannot_modify_another_managers_department(manager_user, second_manager_employee):
-    department = Department.objects.create(
-        name="Finance",
-        description="Finanace Department",
-        manager=second_manager_employee,
-    )
+def test_manager_cannot_modify_another_managers_department(manager_user, second_manager_employee, finance_department):
+    department = finance_department
+    
+    department.manager = second_manager_employee
+    department.save()
 
     permission = DepartmentManagerPermission()
 
@@ -93,12 +89,11 @@ def test_manager_cannot_modify_another_managers_department(manager_user, second_
 
 
 @pytest.mark.django_db
-def test_admin_can_modify_any_department(admin_user,employee):
-    department = Department.objects.create(
-        name="Engineering",
-        description="Engineering Department",
-        manager=employee,
-    )
+def test_admin_can_modify_any_department(admin_user,employee, engineering_department):
+    department = engineering_department
+    
+    department.manager = employee
+    department.save()
 
     permission = DepartmentManagerPermission()
 

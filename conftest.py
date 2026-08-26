@@ -47,15 +47,34 @@ def manager_user():
 
 
 @pytest.fixture
-def employee(user):
-    department = Department.objects.get(name="Engineering")
+def engineering_department():
+    return Department.objects.get(name="Engineering")
 
+
+@pytest.fixture
+def finance_department():
+    return Department.objects.get(name="Finance")
+
+
+@pytest.fixture
+def hr_department():
+    return Department.objects.get(name="HR")
+
+
+@pytest.fixture
+def sales_department():
+    return Department.objects.get(name="Sales")
+
+
+@pytest.fixture
+def employee(user, engineering_department):
     return Employee.objects.create(
         user=user,
         employee_id="EMP001",
-        department=department,
+        department=engineering_department,
         designation="Backend Developer",
         joining_date=datetime.date(2024, 4, 1),
+        employee_status=Employee.ACTIVE,
     )
 
 
@@ -86,13 +105,11 @@ def manager_client(manager_user):
 
 
 @pytest.fixture
-def manager_employee(manager_user):
-    department = Department.objects.get(name="Engineering")
-
+def manager_employee(manager_user,engineering_department):
     return Employee.objects.create(
         user=manager_user,
         employee_id="MGR001",
-        department=department,
+        department=engineering_department,
         designation="Engineering Manager",
         joining_date=datetime.date(2022, 1, 3),
         employee_status=Employee.ACTIVE,
@@ -100,7 +117,7 @@ def manager_employee(manager_user):
 
 
 @pytest.fixture
-def second_manager_employee():
+def second_manager_employee(finance_department):
     second_manager = User.objects.create_user(
         username="manager2",
         email="manager2@example.com",
@@ -110,12 +127,10 @@ def second_manager_employee():
         role="MANAGER",
     )
 
-    department = Department.objects.get(name="Finance")
-
     return Employee.objects.create(
         user=second_manager,
         employee_id="MGR0012",
-        department=department,
+        department=finance_department,
         designation="Finance Manager",
         joining_date=datetime.date(2022, 1, 3),
         employee_status=Employee.ACTIVE,
