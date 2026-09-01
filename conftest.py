@@ -98,7 +98,7 @@ def admin_client(admin_user):
 
 
 @pytest.fixture
-def manager_client(manager_user):
+def manager_client(manager_user, manager_employee):
     client = APIClient()
     client.force_authenticate(user=manager_user)
     return client

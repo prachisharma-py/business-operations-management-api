@@ -4,20 +4,6 @@ from django.urls import reverse
 from operations.models import Operation
 
 
-@pytest.fixture
-def operation(engineering_department, employee):
-    employee.department = engineering_department
-    employee.save()
-
-    return Operation.objects.create(
-        title="Server Maintenance",
-        description="Perform scheduled server maintenance.",
-        department=engineering_department,
-        assigned_to=employee,
-        status=Operation.PENDING,
-    )
-
-
 @pytest.mark.django_db
 def test_list_operations(authenticated_client, operation):
     url = reverse("operation-list")
@@ -84,7 +70,6 @@ def test_update_operation(admin_client, operation):
 
     assert operation.title == "Updated Server Maintenance"
     assert operation.status == Operation.IN_PROGRESS
-
 
 
 @pytest.mark.django_db
