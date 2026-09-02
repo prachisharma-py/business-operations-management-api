@@ -1,9 +1,12 @@
 from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from operations.models import Operation
 from operations.api.serializers import OperationReadSerializer, OperationWriteSerializer
 
 from operations.api.permissions import OperationPermission
+from operations.api.filters import OperationFilter
 
 
 # Create your views here.
@@ -16,6 +19,21 @@ class OperationViewSet(viewsets.ModelViewSet):
     ).all()
 
     permission_classes = [OperationPermission]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    ]
+
+    filter_class = OperationFilter
+
+    search_fields = [
+        "title",
+        "description",
+    ]
+
+    ordering_fields = ["-created_at"]
 
 
     def get_serializer_class(self):
