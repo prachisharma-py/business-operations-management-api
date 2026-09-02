@@ -26,14 +26,19 @@ class OperationViewSet(viewsets.ModelViewSet):
         OrderingFilter,
     ]
 
-    filter_class = OperationFilter
+    filterset_class = OperationFilter
 
     search_fields = [
         "title",
         "description",
     ]
 
-    ordering_fields = ["-created_at"]
+    ordering_fields = [
+        "title",
+        "created_at",
+    ]
+
+    ordering = ("-created_at",)
 
 
     def get_serializer_class(self):
