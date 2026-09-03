@@ -20,9 +20,9 @@ def test_list_department(api_client, department, employee):
     response = api_client.get(url)
 
     assert response.status_code == 200
-    assert len(response.data) == 4
+    assert response.data["count"] == 4
 
-    names = {department["name"] for department in response.data}
+    names = {department["name"] for department in response.data["results"]}
     assert names == {"Finance", "Sales", "HR", "Engineering"}
 
 
