@@ -179,9 +179,12 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ],
 
-    "EXCEPTION_HANDLER": "common.exceptions.custom_exception_handler",
+    "DEFAULT_PAGINATION_CLASS":
+        "rest_framework.pagination.PageNumberPagination",
 
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "PAGE_SIZE": 10,
+
+    "EXCEPTION_HANDLER": "common.exceptions.custom_exception_handler",
 }
 
 

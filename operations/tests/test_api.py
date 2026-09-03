@@ -11,7 +11,7 @@ def test_list_operations(authenticated_client, operation):
     response = authenticated_client.get(url)
 
     assert response.status_code == 200
-    assert response.data[0]["title"] == "Server Maintenance"
+    assert response.data["results"][0]["title"] == "Server Maintenance"
 
 
 @pytest.mark.django_db
