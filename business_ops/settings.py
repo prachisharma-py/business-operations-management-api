@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / ".env")
 
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -53,10 +56,14 @@ LOGGING = {
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(
-    "DJANGO_SECRET_KEY",
-    "django-insecure-development-key",
-)
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+
+SIMPLE_JWT = SIMPLE_JWT = {
+    "SIGNING_KEY": os.getenv(
+        "JWT_SIGNING_KEY",
+        SECRET_KEY,
+    ),
+}
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -180,9 +187,7 @@ REST_FRAMEWORK = {
     ],
 
     "DEFAULT_PAGINATION_CLASS":
-        "rest_framework.pagination.PageNumberPagination",
-
-    "PAGE_SIZE": 10,
+        "common.pagination.StandardResultSetPagination",
 
     "EXCEPTION_HANDLER": "common.exceptions.custom_exception_handler",
 }

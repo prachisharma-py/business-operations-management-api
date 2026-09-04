@@ -8,6 +8,8 @@ env/
 venv/
 .venv/
 
+.env
+
 # SQLite Database
 db.sqlite3
 *.sqlite3

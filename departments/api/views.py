@@ -12,7 +12,7 @@ from departments.api.permissions import DepartmentManagerPermission
 # Create your views here.
 
 class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
+    queryset = Department.objects.all().order_by("name")
     permission_classes = [DepartmentManagerPermission]
 
     def get_serializer_class(self):
