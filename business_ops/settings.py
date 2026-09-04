@@ -58,7 +58,7 @@ LOGGING = {
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-SIMPLE_JWT = SIMPLE_JWT = {
+SIMPLE_JWT = {
     "SIGNING_KEY": os.getenv(
         "JWT_SIGNING_KEY",
         SECRET_KEY,
