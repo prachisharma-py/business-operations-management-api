@@ -1,0 +1,1184 @@
+openapi: 3.0.3
+info:
+  title: Business Operations Management API
+  version: 1.0.0
+  description: |2
+
+    A production-ready REST API for managing business departments,
+    employees, and operations.
+
+    ## Authentication
+
+    This API uses JWT (JSON Web Token) authentication.
+
+    To access protected endpoints:
+
+    1. Register or log in to obtain an access token.
+    2. Click the **Authorize** button above.
+    3. Enter your token using the format:
+
+    `Bearer <your-access-token>`
+
+    Authentication endpoints:
+
+    - `POST /api/v1/auth/register/` — Register a new user.
+    - `POST /api/v1/auth/login/` — Authenticate and obtain a JWT.
+    - `GET /api/v1/auth/me/` — Retrieve the authenticated user.
+
+    ## API Versioning
+
+    The current API version is **v1** and is available under:
+
+    `/api/v1/`
+
+    ## Resources
+
+    ### Authentication
+    User registration, login, and authenticated-user information.
+
+    ### Departments
+    Create and manage business departments.
+
+    ### Employees
+    Manage employees, roles, managers, and employment status.
+
+    ### Operations
+    Create and manage business operations.
+
+    ## Pagination
+
+    Collection endpoints use the configured standard pagination.
+
+    Paginated responses include the requested results together with pagination metadata.
+
+    ## Common HTTP Responses
+
+    - `200 OK` — Request completed successfully.
+    - `201 Created` — Resource created successfully.
+    - `204 No Content` — Resource deleted successfully.
+    - `400 Bad Request` — Invalid request data.
+    - `401 Unauthorized` — Authentication is required or credentials are invalid.
+    - `403 Forbidden` — The authenticated user does not have permission.
+    - `404 Not Found` — The requested resource was not found.
+servers:
+  - url: http://127.0.0.1:8000
+paths:
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create
+      description: Authenticate a user and return JWT access and refresh tokens.
+      summary: Login
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: JWT tokens returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+  /api/v1/auth/me/:
+    get:
+      operationId: v1_auth_me_retrieve
+      description: Retrieve the profile of the currently authenticated user.
+      summary: Get current user
+      tags:
+      - Authentication
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/auth/register/:
+    post:
+      operationId: v1_auth_register_create
+      description: Create a new user account.
+      summary: Register a new user
+      tags:
+      - Authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/departments/:
+    get:
+      operationId: v1_departments_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDepartmentReadList'
+          description: ''
+    post:
+      operationId: v1_departments_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentWrite'
+          description: ''
+  /api/v1/departments/{id}/:
+    get:
+      operationId: v1_departments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentRead'
+          description: ''
+    put:
+      operationId: v1_departments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentWrite'
+          description: ''
+    patch:
+      operationId: v1_departments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentWriteRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepartmentWrite'
+          description: ''
+    delete:
+      operationId: v1_departments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this department.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/employees/:
+    get:
+      operationId: v1_employees_list
+      description: Retrieve a paginated list of employees.
+      summary: List employees
+      parameters:
+      - in: query
+        name: department
+        schema:
+          type: string
+      - in: query
+        name: employee_status
+        schema:
+          type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - RESIGNED
+        description: |-
+          * `ACTIVE` - Active
+          * `INACTIVE` - Inactive
+          * `RESIGNED` - Resigned
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - Employees
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEmployeeReadList'
+          description: ''
+    post:
+      operationId: v1_employees_create
+      description: Create a new employee. Only administrators are allowed to create employees.
+      summary: Create employee
+      tags:
+      - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeWrite'
+          description: ''
+  /api/v1/employees/{id}/:
+    get:
+      operationId: v1_employees_retrieve
+      description: Retrieve employee details. Access is controlled by object-level permissions.
+      summary: Retrieve employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Employees
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeRead'
+          description: ''
+    put:
+      operationId: v1_employees_update
+      description: Update an employee's information. Access is controlled by object-level permissions.
+      summary: Update employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeWrite'
+          description: ''
+    patch:
+      operationId: v1_employees_partial_update
+      description: Partially update an employee's information. Access is controlled by object-level permissions.
+      summary: Partially update employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeWriteRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeWrite'
+          description: ''
+    delete:
+      operationId: v1_employees_destroy
+      description: Delete an employee. Access is controlled by object-level permissions.
+      summary: Delete employee
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Employees
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/operations/:
+    get:
+      operationId: v1_operations_list
+      parameters:
+      - in: query
+        name: assigned_to
+        schema:
+          type: integer
+      - in: query
+        name: department
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - CANCELLED
+          - COMPLETED
+          - IN_PROGRESS
+          - PENDING
+        description: |-
+          * `PENDING` - Pending
+          * `IN_PROGRESS` - In Progress
+          * `COMPLETED` - Completed
+          * `CANCELLED` - Cancelled
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOperationReadList'
+          description: ''
+    post:
+      operationId: v1_operations_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OperationWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OperationWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationWrite'
+          description: ''
+  /api/v1/operations/{id}/:
+    get:
+      operationId: v1_operations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this operation.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationRead'
+          description: ''
+    put:
+      operationId: v1_operations_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this operation.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OperationWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OperationWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OperationWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationWrite'
+          description: ''
+    patch:
+      operationId: v1_operations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this operation.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOperationWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOperationWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOperationWriteRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationWrite'
+          description: ''
+    delete:
+      operationId: v1_operations_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this operation.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    TokenResponse:
+      type: object
+      properties:
+        access:
+          type: string
+          description: JWT access token.
+        refresh:
+          type: string
+          description: JWT refresh token.
+      required:
+      - access
+      - refresh
+    DepartmentBasic:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    DepartmentRead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        manager:
+          allOf:
+          - $ref: '#/components/schemas/ManagerSummary'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - manager
+      - name
+      - updated_at
+    DepartmentWrite:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+        manager:
+          type: integer
+          nullable: true
+      required:
+      - name
+    DepartmentWriteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+        manager:
+          type: integer
+          nullable: true
+      required:
+      - name
+    EmployeeRead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        employee_id:
+          type: string
+          maxLength: 20
+        department:
+          allOf:
+          - $ref: '#/components/schemas/DepartmentBasic'
+          readOnly: true
+        designation:
+          type: string
+          maxLength: 100
+        joining_date:
+          type: string
+          format: date
+        employee_status:
+          $ref: '#/components/schemas/EmployeeStatusEnum'
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - department
+      - designation
+      - employee_id
+      - id
+      - joining_date
+      - updated_at
+      - user
+    EmployeeStatusEnum:
+      enum:
+      - ACTIVE
+      - INACTIVE
+      - RESIGNED
+      type: string
+      description: |-
+        * `ACTIVE` - Active
+        * `INACTIVE` - Inactive
+        * `RESIGNED` - Resigned
+    EmployeeWrite:
+      type: object
+      properties:
+        user:
+          type: integer
+        employee_id:
+          type: string
+          maxLength: 20
+        department:
+          type: integer
+        designation:
+          type: string
+          maxLength: 100
+        joining_date:
+          type: string
+          format: date
+        employee_status:
+          $ref: '#/components/schemas/EmployeeStatusEnum'
+      required:
+      - department
+      - designation
+      - employee_id
+      - joining_date
+      - user
+    EmployeeWriteRequest:
+      type: object
+      properties:
+        user:
+          type: integer
+        employee_id:
+          type: string
+          minLength: 1
+          maxLength: 20
+        department:
+          type: integer
+        designation:
+          type: string
+          minLength: 1
+          maxLength: 100
+        joining_date:
+          type: string
+          format: date
+        employee_status:
+          $ref: '#/components/schemas/EmployeeStatusEnum'
+      required:
+      - department
+      - designation
+      - employee_id
+      - joining_date
+      - user
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    ManagerSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        designation:
+          type: string
+          maxLength: 100
+      required:
+      - designation
+      - id
+      - name
+    OperationRead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        department:
+          type: string
+          readOnly: true
+        assigned_to:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - assigned_to
+      - created_at
+      - department
+      - id
+      - title
+      - updated_at
+    OperationWrite:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        department:
+          type: integer
+        assigned_to:
+          type: integer
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+      required:
+      - department
+      - title
+    OperationWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+        department:
+          type: integer
+        assigned_to:
+          type: integer
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+      required:
+      - department
+      - title
+    PaginatedDepartmentReadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DepartmentRead'
+    PaginatedEmployeeReadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeeRead'
+    PaginatedOperationReadList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationRead'
+    PatchedDepartmentWriteRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+        manager:
+          type: integer
+          nullable: true
+    PatchedEmployeeWriteRequest:
+      type: object
+      properties:
+        user:
+          type: integer
+        employee_id:
+          type: string
+          minLength: 1
+          maxLength: 20
+        department:
+          type: integer
+        designation:
+          type: string
+          minLength: 1
+          maxLength: 100
+        joining_date:
+          type: string
+          format: date
+        employee_status:
+          $ref: '#/components/schemas/EmployeeStatusEnum'
+    PatchedOperationWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+        department:
+          type: integer
+        assigned_to:
+          type: integer
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        confirm_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - confirm_password
+      - password
+      - username
+    RoleEnum:
+      enum:
+      - ADMIN
+      - MANAGER
+      - EMPLOYEE
+      type: string
+      description: |-
+        * `ADMIN` - Admin
+        * `MANAGER` - Manager
+        * `EMPLOYEE` - Employee
+    StatusEnum:
+      enum:
+      - PENDING
+      - IN_PROGRESS
+      - COMPLETED
+      - CANCELLED
+      type: string
+      description: |-
+        * `PENDING` - Pending
+        * `IN_PROGRESS` - In Progress
+        * `COMPLETED` - Completed
+        * `CANCELLED` - Cancelled
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        phone_number:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - id
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: Authentication
+  description: User registration, login, and authentication.
+- name: Departments
+  description: Manage business departments.
+- name: Employees
+  description: Manage employees and employee information.
+- name: Operations
+  description: Manage business operations.

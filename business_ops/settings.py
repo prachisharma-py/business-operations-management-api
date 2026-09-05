@@ -195,12 +195,87 @@ REST_FRAMEWORK = {
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Business Operations Management API",
-    "DESCRIPTION": (
-        "A production-ready Business Operations Management API built with Django REST Framework."
-    ),
+    "DESCRIPTION": """
+A production-ready REST API for managing business departments,
+employees, and operations.
+
+## Authentication
+
+This API uses JWT (JSON Web Token) authentication.
+
+To access protected endpoints:
+
+1. Register or log in to obtain an access token.
+2. Click the **Authorize** button above.
+3. Enter your token using the format:
+
+`Bearer <your-access-token>`
+
+Authentication endpoints:
+
+- `POST /api/v1/auth/register/` — Register a new user.
+- `POST /api/v1/auth/login/` — Authenticate and obtain a JWT.
+- `GET /api/v1/auth/me/` — Retrieve the authenticated user.
+
+## API Versioning
+
+The current API version is **v1** and is available under:
+
+`/api/v1/`
+
+## Resources
+
+### Authentication
+User registration, login, and authenticated-user information.
+
+### Departments
+Create and manage business departments.
+
+### Employees
+Manage employees, roles, managers, and employment status.
+
+### Operations
+Create and manage business operations.
+
+## Pagination
+
+Collection endpoints use the configured standard pagination.
+
+Paginated responses include the requested results together with pagination metadata.
+
+## Common HTTP Responses
+
+- `200 OK` — Request completed successfully.
+- `201 Created` — Resource created successfully.
+- `204 No Content` — Resource deleted successfully.
+- `400 Bad Request` — Invalid request data.
+- `401 Unauthorized` — Authentication is required or credentials are invalid.
+- `403 Forbidden` — The authenticated user does not have permission.
+- `404 Not Found` — The requested resource was not found.
+""",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
-}
 
+    "TAGS": [
+        {
+            "name": "Authentication",
+            "description": "User registration, login, and authentication.",
+        },
+        {
+            "name": "Departments",
+            "description": "Manage business departments.",
+        },
+        {
+            "name": "Employees",
+            "description": "Manage employees and employee information.",
+        },
+        {
+            "name": "Operations",
+            "description": "Manage business operations.",
+        },
+    ],
+
+    "COMPONENT_SPLIT_REQUEST": True,
+}
 
 AUTH_USER_MODEL = "accounts.User"

@@ -2,6 +2,8 @@ from rest_framework import serializers
 from departments.models import Department
 from employees.models import Employee
 
+from drf_spectacular.utils import extend_schema_field
+
 
 class ManagerSummarySerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
@@ -10,6 +12,7 @@ class ManagerSummarySerializer(serializers.ModelSerializer):
         model = Employee
         fields = ["id", "name", "designation"]
 
+    @extend_schema_field(serializers.CharField)
     def get_name(self, obj):
         return obj.user.get_full_name() or obj.user.username
 

@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from operations.models import Operation
 
+from drf_spectacular.utils import extend_schema_field
+
 
 class OperationReadSerializer(serializers.ModelSerializer):
     department = serializers.StringRelatedField()
@@ -21,6 +23,7 @@ class OperationReadSerializer(serializers.ModelSerializer):
         )
 
 
+    @extend_schema_field(serializers.DictField(allow_null=True))
     def get_assigned_to(self, obj):
         if obj.assigned_to is None:
             return None
@@ -29,7 +32,7 @@ class OperationReadSerializer(serializers.ModelSerializer):
             "id": obj.assigned_to.id,
             "employee_id": obj.assigned_to.employee_id,
             "name": (
-                obj.assigned_to.user.get_full_name() or obj.assigne_to.user.username
+                obj.assigned_to.user.get_full_name() or obj.assigned_to.user.username
             ),
             "designation": obj.assigned_to.designation, 
         }

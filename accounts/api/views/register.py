@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from ..serializers import RegisterSerializer
+from ..serializers import RegisterSerializer, UserSerializer
 
 from drf_spectacular.utils import extend_schema
 
@@ -10,9 +10,12 @@ from drf_spectacular.utils import extend_schema
 @extend_schema(
     summary="Register a new user",
     description="Create a new user account.",
+    request=RegisterSerializer,
+    responses={
+        201: UserSerializer
+    },
     tags=["Authentication"],
 )
-
 class RegisterView(APIView):
     permission_classes = [AllowAny]
     
